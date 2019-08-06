@@ -57,7 +57,7 @@ module "objects" {
   public_bucket        = "${module.buckets.public_bucket}"
   private_bucket       = "${module.buckets.private_bucket}"
   lambda_json_zip_path = "${data.archive_file.lambda_json.output_path}"
-  example_image_path   = "/src/assets/example.jpg"
+  example_image_path   = "${path.module}/src/assets/example.jpg"
   # lambda_edge_bucket = "${module.buckets.public_bucket}"
 }
 
@@ -94,4 +94,7 @@ output "lambda_edge_bucket_domain_name" {
 }
 output "example_image_url" {
   value = "${module.buckets.public_bucket_domain_name}/${module.objects.example_image_key}"
+}
+output "lambda_url" {
+  value = "${module.api_gateway.lambda_url}"
 }
