@@ -57,6 +57,7 @@ module "objects" {
   public_bucket        = "${module.buckets.public_bucket}"
   private_bucket       = "${module.buckets.private_bucket}"
   lambda_json_zip_path = "${data.archive_file.lambda_json.output_path}"
+  example_image_path   = "${path.module}/src/assets/example.jpg"
   # lambda_edge_bucket = "${module.buckets.public_bucket}"
 }
 

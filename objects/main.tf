@@ -1,6 +1,8 @@
 variable public_bucket {}
 variable private_bucket {}
 variable lambda_json_zip_path {}
+variable "example_image_path" {}
+
 
 provider "aws" {
   alias = "lambda_edge"
@@ -8,7 +10,7 @@ provider "aws" {
 resource "aws_s3_bucket_object" "example_image" {
   bucket       = "${var.public_bucket}"
   key          = "example.jpg"
-  source       = "src/assets/example.jpg"
+  source       = "${var.example_image_path}"
   acl          = "public-read"
   content_type = "image/jpeg"
 
