@@ -10,7 +10,7 @@ resource "aws_api_gateway_rest_api" "example" {
 }
 
 # equivalent to endpoint
-# AWS_BUG: if you set the path part ot 'test' it breaks??
+# AWS_BUG: if you set the path part ot 'test' it breaks!!
 resource "aws_api_gateway_resource" "example" {
   rest_api_id = "${aws_api_gateway_rest_api.example.id}"
   parent_id   = "${aws_api_gateway_rest_api.example.root_resource_id}"
@@ -28,7 +28,7 @@ resource "aws_api_gateway_integration" "example" {
   rest_api_id = "${aws_api_gateway_rest_api.example.id}"
   resource_id = "${aws_api_gateway_resource.example.id}"
   http_method = "${aws_api_gateway_method.example.http_method}"
-  # method that the api gateway will use to call the lambda - lambdas can only be invoked by POST
+  # method that the api gateway will use to call the lambda - lambdas can only be invoked by POST, even though the gateway method may be a GET
   type                    = "AWS_PROXY"
   uri                     = "${var.lambda_json_invoke_arn}"
   integration_http_method = "POST"

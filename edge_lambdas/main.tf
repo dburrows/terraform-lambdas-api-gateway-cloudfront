@@ -52,6 +52,7 @@ resource "aws_iam_policy" "policy_lambda_edge" {
 EOF
 }
 
+# attach policy to role - see non-edge lambda config for how to do this with existing role
 resource "aws_iam_role_policy_attachment" "basic_execution_policy" {
   role       = "${aws_iam_role.lambda_edge.id}"
   policy_arn = "${aws_iam_policy.policy_lambda_edge.arn}"
