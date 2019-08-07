@@ -1,4 +1,7 @@
 "use strict";
+// hello world lambda from
+// https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
+
 console.log("Loading hello world function");
 
 // we map 'index.handler' as the entrypoint in the lambda/terraform setup

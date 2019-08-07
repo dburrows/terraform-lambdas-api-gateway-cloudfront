@@ -95,6 +95,7 @@ output "lambda_edge_bucket_domain_name" {
 output "example_image_url" {
   value = "${module.buckets.public_bucket_domain_name}/${module.objects.example_image_key}"
 }
-output "lambda_url" {
-  value = "${module.api_gateway.lambda_url}"
+
+output "lambda_public_url" {
+  value = "${module.api_gateway.lambda_public_url}"
 }

@@ -1,5 +1,8 @@
 "use strict";
 
+// example lambda edge from 'generating responses' section of
+// https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html#lambda-examples-generated-response-examples
+
 const content = `
 <\!DOCTYPE html>
 <html lang="en">
