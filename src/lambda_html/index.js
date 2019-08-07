@@ -43,7 +43,7 @@ exports.handler = (event, context, callback) => {
         }
       ]
     },
-    body: {content}
+    body: content
   };
   callback(null, response);
 };

@@ -4,7 +4,7 @@ variable "private_bucket_name" {}
 variable "lambda_edge_bucket_name" {}
 variable "project_prefix" {}
 variable "region" {}
-# variable "edge_region" {}
+variable "lambda_edge_region" {}
 variable "account_id" {}
 
 terraform {
@@ -20,7 +20,7 @@ provider "aws" {
 provider "aws" {
   version = "~> 2.22"
   profile = "${var.profile}"
-  region  = "us-east-1"
+  region  = "${var.lambda_edge_region}"
   alias   = "lambda_edge"
 }
 
@@ -30,17 +30,11 @@ data "archive_file" "lambda_json" {
   output_path = "${path.module}/_build/lambda_json.zip"
 }
 
-# data "archive_file" "lambda_html" {
-#   type        = "zip"
-#   source_dir  = "${path.module}/src/lambda_json"
-#   output_path = "${path.module}/_build/lambda_json.zip"
-# }
-
-# data "archive_file" "lambda_archive" {
-#   type        = "zip"
-#   source_dir  = "${path.module}/_lambda"
-#   output_path = "${path.module}/_build/lambda.zip"
-# }
+data "archive_file" "lambda_html" {
+  type        = "zip"
+  source_dir  = "${path.module}/src/lambda_html"
+  output_path = "${path.module}/_build/lambda_html.zip"
+}
 
 module "buckets" {
   source                  = "./buckets"
@@ -56,9 +50,13 @@ module "objects" {
   source               = "./objects"
   public_bucket        = "${module.buckets.public_bucket}"
   private_bucket       = "${module.buckets.private_bucket}"
+  lambda_edge_bucket   = "${module.buckets.lambda_edge_bucket}"
   lambda_json_zip_path = "${data.archive_file.lambda_json.output_path}"
+  lambda_html_zip_path = "${data.archive_file.lambda_html.output_path}"
   example_image_path   = "${path.module}/src/assets/example.jpg"
-  # lambda_edge_bucket = "${module.buckets.public_bucket}"
+  providers = {
+    aws.lambda_edge = aws.lambda_edge
+  }
 }
 
 module "lambdas" {
@@ -78,6 +76,25 @@ module "api_gateway" {
   lambda_json_qualified_arn = "${module.lambdas.lambda_json_qualified_arn}"
 }
 
+module "edge_lambdas" {
+  source               = "./edge_lambdas"
+  lambda_edge_bucket   = "${module.buckets.lambda_edge_bucket}"
+  lambda_edge_html_key = "${module.objects.lambda_edge_html_key}"
+  lambda_html_hash     = "${data.archive_file.lambda_html.output_base64sha256}"
+  project_prefix       = "${var.project_prefix}"
+  providers = {
+    aws.lambda_edge = aws.lambda_edge
+  }
+}
+
+module "cloudfront" {
+  source                         = "./cloudfront"
+  public_bucket_domain_name      = "${module.buckets.public_bucket_domain_name}"
+  lambda_edge_bucket_domain_name = "${module.buckets.lambda_edge_bucket_domain_name}"
+  origin_id                      = "${var.project_prefix}-cloudfront-distribution"
+  project_prefix                 = "${var.project_prefix}"
+  edge_lambda_html_qualified_arn = "${module.edge_lambdas.edge_lambda_html_qualified_arn}"
+}
 
 
 
@@ -96,6 +113,10 @@ output "example_image_url" {
   value = "${module.buckets.public_bucket_domain_name}/${module.objects.example_image_key}"
 }
 
-output "lambda_public_url" {
-  value = "${module.api_gateway.lambda_public_url}"
+output "cloudfront_domain_name" {
+  value = "${module.cloudfront.cloudfront_domain_name}"
+}
+
+output "edge_lambda_cloud_url" {
+  value = "${module.cloudfront.edge_lambda_cloud_url}"
 }

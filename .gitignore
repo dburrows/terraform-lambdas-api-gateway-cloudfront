@@ -65,3 +65,4 @@ typings/
 .terraform
 terraform.tfstate.backup
 deployDev.hcl
+/_build
